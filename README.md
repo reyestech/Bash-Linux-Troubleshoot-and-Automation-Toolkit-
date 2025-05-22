@@ -5,32 +5,79 @@
 # Bash-Linux-Troubleshoot-and-Automation-Toolkit
 
 ## Overview
+
 Effective Linux system administration and cybersecurity necessitate prompt diagnostics, comprehensive visibility, and intelligent automation. This repository consists of a collection of Bash scripts designed to empower Linux administrators, DevOps engineers, and security teams with immediate troubleshooting capabilities. These scripts are intended to capture system metrics, diagnose issues, automate health checks, and enhance operational awareness, all while employing standard Linux utilities without the need for external dependencies.
 
 This toolkit is particularly suitable for system administrators managing Linux servers, professionals engaged in learning Linux system administration, and experienced IT professionals seeking lightweight and reliable utilities for live incident response or root cause analysis. Each script is modular, well-documented, parameterizable, and is safe for utilization across various Linux distributions on servers, workstations, or virtual machines.
 
+This repository delivers a curated **suite of 12 Bash scripts** that empower system administrators, DevOps engineers, and security responders to:
+
+* 🔍 **Capture critical evidence** within seconds.
+* 🛠️ **Pinpoint misconfigurations** before they snowball.
+* 🤖 **Automate routine hygiene tasks** so you can focus on higher‑value work.
+
+Each script is:
+
+* **Dependency‑free** – built only on ubiquitous GNU/Linux tooling.
+* **Parameter‑driven** – easily tailored to your environment.
+* **Comment‑rich** – ready for learning, audits, and pull‑requests.
+
+Whether you are a junior engineer maintaining your first VPS, a blue‑team analyst on an IR bridge call, or a hiring manager skimming for actionable skills, this toolkit showcases **production‑safe Bash craftsmanship**.
+
+<details>
+<summary><strong>📚 Table of Contents — click to expand</strong></summary>
+
+* [Quick‑Start](#quick‑start)
+* [Script‑Catalogue](#script‑catalogue)
+
+  1. [collect\_system\_logs.sh](#1️⃣-collect_system_logssh)
+  2. [check\_system\_integrity.sh](#2️⃣-check_system_integritysh)
+  3. [get\_active\_connections.sh](#3️⃣-get_active_connectionssh)
+  4. [system\_health\_snapshot.sh](#4️⃣-system_health_snapshotsh)
+  5. [detect\_bruteforce\_logons.sh](#5️⃣-detect_bruteforce_logonssh)
+  6. [get\_listening\_ports.sh](#6️⃣-get_listening_portssh)
+  7. [audit\_local\_admin\_members.sh](#7️⃣-audit_local_admin_memberssh)
+  8. [run\_antivirus\_scan.sh](#8️⃣-run_antivirus_scansh)
+  9. [test\_network\_connectivity.sh](#9️⃣-test_network_connectivitysh)
+  10. [export\_firewall\_rules.sh](#🔟-export_firewall_rulessh)
+  11. [schedule\_automated\_system\_updates.sh](#1️⃣1️⃣-schedule_automated_system_updatessh)
+  12. [rotate\_and\_archive\_logs.sh](#1️⃣2️⃣-rotate_and_archive_logssh)
+* [Conclusion](#conclusion)
+
+</details>
+
 ---
 
 ## Guide
-
 ### 📚 Quick‑Start-Guide
 
-Quick Start
-
-To get started with the toolkit, simply clone the repository to your local machine using git. This allows you to immediately access all of the included scripts. Once downloaded, navigate into the directory and make the scripts executable using chmod. You can then run any script directly from your terminal by calling its filename with ./.
+To get started with the toolkit, simply clone the repository to your local machine using git. This allows you to immediately access all of the included scripts. Once downloaded, navigate into the directory and make the scripts executable using chmod. You can then run any script directly from your terminal by calling its filename with ./. 
 
 These scripts are designed to be portable and require no external libraries, making them ideal for environments with limited internet access or tight security controls. They are suitable for laptops, servers, and virtual machines. Most scripts include comments and examples to help new users understand their purpose and structure.
 
+```bash
+# 1. Clone the repo
+ git clone https://github.com/<your‑org>/bash-linux-troubleshoot-toolkit.git
+ cd bash-linux-troubleshoot-toolkit
 
-## Script-Catalogue
+# 2. Make everything executable
+ chmod +x Scripts/*.sh
 
-## Collect-System-Info
-### 1️⃣collect_system_logs.sh
+# 3. Run any helper – e.g. grab the last 12 h of syslog + auth
+ ./Scripts/collect_system_logs.sh --hours 12 --logs syslog,auth --output /tmp/IR
+```
 
-In the investigation of incidents, comprehending the sequence of events is essential. This script automatically collects pertinent system logs (e.g., Syslog, auth.log, kern.log, or journalctl output) within a specified time frame. Rather than manually navigating through various log files or executing complex journalctl queries, this script produces organized output, streamlining the process and reducing the potential for human error. This automation is invaluable during high-pressure situations, ensuring critical log data is captured swiftly and consistently.
+All helpers accept `-h | --help` and print inline docs.
 
-The organized output generated by this script significantly facilitates analysis by coherently presenting log entries, often chronologically sorted or pre-filtered based on the specified timeframe. This makes tracing event progressions easier, correlating activities across different log sources, and efficiently using tools like `grep` for specific keyword searches. It's beneficial for post-incident forensic analysis, debugging elusive application failures, tracking unauthorized access attempts, or simply understanding system behavior leading up to a reported issue, saving administrators considerable time and effort.
 
+---
+## Script‑Catalogue
+
+### 1️⃣ collect\_system\_logs.sh
+
+In high-pressure incidents, every second counts, and the phrase "Logs or it did not happen" rings true. Navigating complex log files can lead to errors and delays, making collect_system_logs.sh an essential tool. This script automates the export of Syslog and journalctl files, organizing raw data into a compressed, forensics-ready archive.
+
+Instead of juggling multiple commands, users can access a structured archive suitable for immediate SIEM import or ticket attachment. The script categorizes log sources into distinct, timestamped files (e.g., syslog.log.gz, auth.log.gz), allowing analysts to quickly search logs with zgrep, input clean data into tools like Splunk, and compare collections to identify critical changes.
 
 #### How it works
 
@@ -82,286 +129,408 @@ fi
 
 ---
 
-## Monitor-Resources
-### 2️⃣ check_system_integrity.sh
+### 2️⃣ check\_system\_integrity.sh
 
-The integrity of system files and unexpected modifications can severely undermine system stability and security. This script integrates various native Linux tools, such as rpm -Va for RPM-based distributions or debsums for Debian-based systems, to meticulously verify the integrity of installed packages against their original manifests. It can also be configured to check checksums of critical configuration files, providing an added layer of assurance against unauthorized alterations.
+Package or file integrity drift often precedes outages and breaches. This script unifies rpm -Va and debsums checks, drops results into a timestamped report, and highlights unexpected hashes or permissions so you can intervene before minor deviations become service stopping incidents.
 
-Beyond package verification, this script can optionally facilitate filesystem integrity checks, which are crucial for detecting and potentially correcting inconsistencies or corruption at the filesystem level. While direct `fsck` operations require careful handling (often on unmounted filesystems), the script can guide or report on the status of filesystem health, flagging potential issues that might indicate failing storage hardware or critical software errors. Regularly running such integrity checks helps detect compromised files early, accidental corruption, or malicious tampering, allowing for timely remediation.
+Beyond vendor packages, the tool can be extended to snapshot hashes of bespoke configuration files such as /etc/ssh/sshd_config, providing an extra guardrail against silent backdoors or well intentioned but undocumented changes. Pair it with a nightly cron to create a tamper evident audit trail.
 
-How it works (Conceptual)
-> •	Builds a log directory to preserve historical runs.
-> •	For RPM-based systems (e.g., CentOS, RHEL, Fedora): Executes rpm -Va to verify all installed packages.
-> •	For Debian-based systems (e.g., Ubuntu, Debian): Executes debsums (if installed) or dpkg --verify (though dpkg --verify has limitations).
-> •	Captures output in a timestamped log file.
-> •	Optionally, it could provide information or reminders about running fsck on unmounted filesystems during maintenance windows.
 
-**Usage Example**
+#### How it works
+
+* Detects distro via `/etc/os-release`.
+* If Debian‑based: ensures `debsums` is installed; else prompts.
+* If RPM‑based: runs `rpm -Va`.
+* Saves anomalies to `integrity_YYYYMMDD.txt` in `$PWD`.
+* Emits a simple verdict (`✔ OK` vs `⚠ Issues found`).
+
+#### Usage Example
 
 ```bash
-Insert example here
+sudo ./check_system_integrity.sh
 ```
 
-### Code
-
 ```bash
-Insert code here
+#!/usr/bin/env bash
+set -euo pipefail
+LOG="integrity_$(date +%Y%m%d).txt"
+source /etc/os-release
+if [[ $ID =~ (debian|ubuntu) ]]; then
+  command -v debsums >/dev/null || { echo "Install debsums: sudo apt install debsums"; exit 1; }
+  debsums -s > "$LOG"
+else
+  rpm -Va | tee "$LOG"
+fi
+[[ -s $LOG ]] && echo "⚠️ Issues found – see $LOG" || echo "✔ Integrity OK"
 ```
 
 ---
 
-## Network-Diagnostics
-### 3️⃣ Get‑ActiveConnections
+### 3️⃣ get\_active\_connections.sh
 
-3️⃣ get_active_connections.sh
+Command and control beacons leave unmistakable footprints as ESTABLISHED sockets. This helper surfaces every outbound TCP session, correlating remote endpoints with the owning process and user account. The result is a sortable list ideal for rapid threat hunt filtering or bandwidth hog investigations.
 
-The presence of malware or unauthorized processes often leads to the establishment of unexpected network connections. This script displays all established TCP and listening UDP connections, crucially identifying each with the corresponding process name, Process ID (PID), and the user who initiated it. This detailed information is paramount for security audits and network troubleshooting, providing a clear view of all network activity originating from or terminating the system.
+For defenders, it spotlights suspicious destinations and uncovers covert data exfiltration. For operators, it quickly reveals runaway services or misconfigured daemons saturating network links without the overhead of full stack profilers.
 
-For security professionals, this script is an essential tool for rapidly identifying suspicious outbound connections that could indicate data exfiltration or communication with command-and-control servers. It also helps pinpoint unauthorized listening services that might have been started by malware or misconfigured applications. For system administrators, it aids in diagnosing network-related application issues, identifying which processes are consuming network resources, or verifying that services are correctly bound to expected network interfaces and ports, ensuring that the system's network posture is secure and functional.
+> For threat hunts it highlights suspicious destinations; for ops it surfaces rogue processes hogging links.
 
-**How it works**
+#### How it works
 
-> •	Queries `Get‑NetTCPConnection` for **`State = Established`**.
-> •	Resolves Process ID to friendly names using `Get‑Process`.
-> •	Retrieves the owning username via CIM’s `Win32_Process.GetOwner()`.
-> •	Outputs an alphabetised table ready for copy‑paste into a report or pasted into Grid View.
+* Wraps `netstat -pant` (fallback: `ss -pant`).
+* Filters on `ESTABLISHED` state.
+* Parses PID/command and maps to username.
+* Sorts by remote host for coherence.
 
-**Usage Example**
+#### Usage Example
 
 ```bash
-Insert example here
+./get_active_connections.sh | grep -E "\b443\b"
 ```
 
-
-### Code
-
 ```bash
-Insert code here
-```
-
-## System-Snapshot
-## 4️⃣ get_system_health_snapshot.sh
-
-Before diving deep into troubleshooting, it is imperative to establish a quick baseline of the system's current operational state. This script efficiently captures a real-time snapshot of key performance indicators, including current CPU load averages, detailed memory usage (total, used, free, buffers/cache), available disk space on all mounted filesystems, and the count of pending system updates. This holistic overview provides immediate context about the system's resource utilization and security posture.
-
-This snapshot allows administrators to rapidly identify or rule out common causes of performance degradation or instability. For instance, a high CPU load might point to a runaway process, critically low memory could explain sluggishness due to swapping, and insufficient disk space can lead to application failures or even prevent the system from booting. Information on pending updates also highlights potential security vulnerabilities. This script acts as a first-response diagnostic, guiding subsequent troubleshooting steps by quickly indicating whether the issue is likely related to resource exhaustion, storage problems, or outdated software.
-
-**How it works**
-
-> • CPU Load: Uses uptime for load averages or mpstat / vmstat for more detailed CPU usage.
-> •	Memory Usage: Parses output from free -m.
-> •	Disk Space: Parses output from df -h.
-> •	Pending Updates: * For Debian/Ubuntu: apt list --upgradable | wc -l (adjusting for header lines). * For RHEL/CentOS/Fedora (yum): yum check-update | grep -vc "^$" (approximate). * For RHEL/CentOS/Fedora (dnf): dnf check-update | wc -l (adjusting for header lines).
-> •	Outputs everything as a formatted list or key-value pairs.
-
-
-**How it works**
-
-> •	CPU Load: Uses uptime for load averages or mpstat / vmstat for more detailed CPU usage.
-> •	Memory Usage: Parses output from free -m.
-> •	Disk Space: Parses output from df -h.
-> •	Pending Updates: * For Debian/Ubuntu: apt list --upgradable | wc -l (adjusting for header lines). * For RHEL/CentOS/Fedora (yum): yum check-update | grep -vc "^$" (approximate). * For RHEL/CentOS/Fedora (dnf): dnf check-update | wc -l (adjusting for header lines).
-> •	Outputs everything as a formatted list or key-value pairs.
-
-**Usage Example**
-
-```bash
-Insert example here
-```
-
-*(Run it again after fixes and `Compare-Object` the two logs to quantify improvement.)*
-
----
-
-### Code
-
-```bash
-Insert code here
-```
----
-
-## Detect
-### 5️⃣ Detect‑BruteForceLogons
-
-A sudden or sustained increase in failed login attempts may indicate a potential brute-force attack targeting user accounts or system services, such as SSH. This script is designed to proactively analyze authentication logs (including /var/log/auth.log, /var/log/secure, or journalctl output for sshd and other login services) for instances of failed login attempts over a user-defined duration. The script aggregates these failures by source IP address and targeted user account.
-
-This tool flags instances that exceed a predefined threshold by enabling administrators to identify and respond to active attacks quickly. The aggregated data reveals patterns, such as a single IP address attempting access to multiple accounts or a specific account targeted by various IP addresses. Such insights inform defensive measures, including blocking malicious IP addresses, temporary account locks, or implementing stricter password policies and account lockout procedures. Automating this detection serves as an early warning system that mitigates the risk of unauthorized access before a compromise occurs.
-
-**How it works**
-
-> •	Accepts hours_back and threshold parameters.
-> •	For journalctl: journalctl _SYSTEMD_UNIT=sshd.service --since "X hours ago" | grep "Failed password"
-> •	For log files: grep "Failed password" /var/log/auth.log (and similar for other services like su, sudo).
-> •	Uses awk, sed, grep to extract source IP addresses and usernames from log entries.
-> •	Uses sort | uniq -c to count attempts per IP/username combination.
-> •	Filters for combinations where count ≥ Threshold.
-> •	Outputs a report, possibly to a CSV or formatted text.
-
-**Usage Example**
-
-```bash
-Insert example here
-```
-
-### Code
-
-```bash
-Insert code here
+#!/usr/bin/env bash
+set -euo pipefail
+sudo netstat -pant 2>/dev/null | awk '$6=="ESTABLISHED" {print $4,$5,$7}' | while read l r pu; do
+  pid="${pu%%/*}"; proc="${pu##*/}"; user=$(ps -o user= -p "$pid" 2>/dev/null || echo "-")
+  printf "%s -> %-22s %-8s %s\n" "$l" "$r" "$user" "$proc"
+done | sort -k2
 ```
 
 ---
 
-## Listening-Ports
-### 6️⃣ Get‑ListeningPorts
+### 4️⃣ system\_health\_snapshot.sh
 
-Understanding which services actively listen for network connections is essential for maintaining system security and facilitating effective network troubleshooting. This utility meticulously catalogs all TCP and UDP ports currently in a LISTEN state on the system. Additionally, it correlates each listening port with its respective owning process, Process ID (PID), and, where applicable, the complete executable path of the program, thereby providing a comprehensive overview of network-facing services.
+Every effective troubleshooting session starts with a baseline. This script captures CPU load averages, memory utilisation, disk capacity, and count of pending updates in one compact report—providing an immediate pulse check on host health. Store successive snapshots to quantify the impact of tuning or to satisfy change approval evidence requirements.
 
-From a security perspective, this information is critical for identifying unauthorized or unexpected services that may be open to incoming connections. Such services may indicate the presence of backdoors, malicious activity, or misconfigurations that create unnecessary vulnerabilities. In terms of troubleshooting, this utility enables administrators to confirm that legitimate services are operating as intended, listen to the appropriate IP addresses and ports, and facilitate the swift identification and resolution of port conflicts between various applications. This ensures reliable network service delivery.
+Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and package managers), the script executes consistently across distributions and even minimal recovery environments, giving you dependable metrics no matter where you run it.
 
-**How it works**
+> Capture CPU load, memory, disk, and pending updates in one shot.
 
-> •	Uses ss -tulnp or netstat -tulnp. The -l flag shows listening sockets, -t for TCP, -u for UDP, -n for numeric ports/hosts, -p to show PID/program name.
-> • Parses the output to present: Protocol, Local Address:Port, PID/Program Name.
-> •	The program name might include the path, or further lookup in /proc/[PID]/exe could be done.
-> •	Outputs a sortable table.
+#### How it works
 
-**Usage Example**
+* CPU: `uptime` for 1/5/15‑min load.
+* Memory: `free -m`.
+* Disk: `df -hT` sans tmpfs.
+* Pending updates: auto‑detects `apt`, `dnf`, or `yum`.
+* Prints a labeled report.
+
+#### Usage Example
 
 ```bash
-Insert example here
+./system_health_snapshot.sh > before_fix.txt
+# apply tuning…
+./system_health_snapshot.sh > after_fix.txt
+diff -u before_fix.txt after_fix.txt
 ```
 
-### Code
-
 ```bash
-Insert code here
+#!/usr/bin/env bash
+set -euo pipefail
+echo "== CPU LOAD =="; uptime
+
+echo "\n== MEMORY (MB) =="; free -m
+
+echo "\n== DISK (GB) =="; df -hT | grep -Ev '^tmpfs|^udev'
+
+if command -v apt >/dev/null; then
+  echo "\n== PENDING APT UPDATES =="; sudo apt list --upgradable 2>/dev/null | tail -n +2 | wc -l
+elif command -v dnf >/dev/null; then
+  echo "\n== PENDING DNF UPDATES =="; sudo dnf check-update -q | grep -c '^'
+fi
 ```
 
 ---
 
-## Audit
-### 7️⃣ Audit‑LocalAdminMembers
+### 5️⃣ detect\_bruteforce\_logons.sh
 
-Uncontrolled or excessive privileged access, including users with root or sudo capabilities, represents a significant security risk to any Linux system. This script is designed to uphold stringent control over administrative privileges by systematically enumerating all local users with administrative rights. This includes users with a User ID (UID) of 0 (the traditional root user) and users who are members of groups typically granted sudo privileges (such as 'sudo' or 'wheel' groups).
+SSH brute force attempts flood logs long before a compromise. This analyser parses authentication records for failed passwords, grouping attempts by IP and user, then flags offenders that exceed a configurable threshold. Feed the output directly into fail2ban, firewall blocklists, or SIEM watchlists for real time protection.
 
-A notable feature of this script is its capability to compare the identified list of administrative users against a predetermined list of authorized administrators. This comparison promptly highlights discrepancies, such as unauthorized new administrative accounts or legitimate accounts that should have had their privileges revoked. This process is instrumental in enforcing the principle of least privilege. Regular audits utilizing this script assist in identifying potential insider threats, compromised accounts with escalated privileges, or administrative oversights, ensuring that the system's administrative user base remains secure and complies with organizational policies. licies
-a
-It parses the output to present the following information: Protocol, Local Address: Port, and PID/Program Name. The program name may include the path, or further lookup in `/proc/[PID]/exe` may be performed.
-
-The output is presented in a sortable table.
-
-### Usage Example
-```
-./get_listening_ports.sh | grep nginx
-./get_listening_ports.sh --protocol tcp
-```
+Historical reports also reveal attack trends, helping security teams justify MFA roll outs and hardening budgets with concrete data instead of anecdotal evidence.
 
 
-**How it works**
+#### How it works
 
-> •	Checks /etc/passwd for users with UID 0: awk -F: '($3 == 0) { print $1 }' /etc/passwd.
-> •	Checks members of privileged groups (e.g., sudo, wheel) by parsing /etc/group: grep -E '^sudo:|^wheel:' /etc/group | awk -F: '{print $4}' | tr ',' '\n'.
-> •	Compares these lists against a predefined "safe list" of expected admin/sudo users.
-> •	Flags any unexpected privileged accounts.
+* Accepts `--hours` and `--threshold`.
+* Greps `/var/log/auth.log` *or* journal for "Failed password".
+* Parses IP + username with `awk`.
+* Uses `uniq -c` to tally.
+* Prints offenders sorted high‑to‑low.
 
-**Usage Example**
+#### Usage Example
 
 ```bash
-Insert example here
+sudo ./detect_bruteforce_logons.sh --hours 12 --threshold 20
 ```
 
-### Code
-
 ```bash
-Insert code here
+#!/usr/bin/env bash
+set -euo pipefail
+HOURS=24; THRESH=15
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --hours) HOURS="$2"; shift 2;;
+    --threshold) THRESH="$2"; shift 2;;
+    *) echo "Usage: $0 [--hours N] [--threshold N]"; exit 1;;
+  esac
+done
+SINCE="$(date --date="-$HOURS hour" '+%b %e %H')"
+LOGSRC="/var/log/auth.log"
+[[ -f $LOGSRC ]] || { echo "No $LOGSRC found"; exit 1; }
+awk -v dt="$SINCE" '$0>dt && /Failed password/' "$LOGSRC" | \
+  awk '{ip=$NF; user=$(NF-5); print ip","user}' | sort | uniq -c | sort -nr | \
+  awk -v t=$THRESH '$1>=t {printf "%s attempts\tIP:%s\tUser:%s\n",$1,substr($2,1,index($2,",")-1),substr($2,index($2,",")+1)}'
 ```
 
 ---
 
-## Scan
-### 8️⃣ Invoke-AntivirusSca
+### 6️⃣ get\_listening\_ports.sh
 
-Conducting an on-demand antivirus or anti-malware scan on Linux systems is essential to incident response procedures and routine security assessments. This utility allows users to initiate a comprehensive scan utilizing a standard Linux-compatible antivirus engine, such as ClamAV, which can target specified paths or the entire filesystem. The primary objective is identifying various threats, including viruses, trojans, malware, and potentially unwanted programs (PUPs) that may have compromised the system.
+Unintended listening services are low hanging fruit for attackers. This utility enumerates every TCP and UDP socket in a LISTEN state, tagging each with protocol, address, port, PID, and executable name. That clarity allows administrators to spot rogue backdoors or verify that micro services expose only authorised interfaces.
 
-Upon conclusion of the scan, the script generates a summary of the findings in a clear and actionable format. This summary typically includes the number of files scanned, the number of infections detected, and detailed information concerning any malicious files identified, including their respective locations and the nature of the threats. Such comprehensive reporting enables administrators to swiftly evaluate the situation and undertake necessary remediation actions, such as quarantining or eliminating infected files. This tool proves particularly valuable for scanning high-risk areas, such as web server document roots, email spools, or user upload directories, where malicious content is frequently introduced.
+Embed it in CI smoke tests or golden image validation to enforce network surface standards automatically—no manual port audits required.
 
-**How it works**
+> Map every service bound to a port, crucial for detecting rogue listeners or confirming app binds
 
-> •	Checks if clamscan (or another specified AV tool) is installed and in PATH.
-> •	Accepts parameters for scan type (e.g., --path /home or --full which might scan /).
-> •	Executes clamscan -r [path] (recursive scan).
-> •	Captures the output, specifically looking for infected files summaries.
-> •	Prints a summary of threats found or a "no threats detected" message.
+#### How it works
 
+* Executes `ss -tulnp` (fallback: `netstat -tulnp`).
+* Extracts protocol, address\:port, PID.
+* Resolves PID → command via `/proc/<pid>/comm`.
+* Sorts by address.
 
-**Usage Example**
+#### Usage Example
 
 ```bash
-Insert example here
+./get_listening_ports.sh | grep 8080
 ```
 
-### Code
-
 ```bash
-Insert code here
+#!/usr/bin/env bash
+set -euo pipefail
+sudo ss -tulnp | awk 'NR>1 {print $1,$5,$7}' | while read proto addr proc; do
+  pid="${proc%%,*}"; pid="${pid//pid=}"; cmd="$(ps -p $pid -o comm= 2>/dev/null)";
+  printf "%-4s %-25s %-6s\n" "$proto" "$addr" "$cmd"
+done | sort -k2
 ```
 
 ---
- 
-## Network
-## 9️⃣ Test‑NetworkConnectivity
 
-When network-related issues occur, it is imperative to quickly ascertain whether the problem resides locally on the machine, within the local network segment (for example, the gateway or local DNS server), or with an external host or service. This script offers a streamlined approach to testing network reachability to one or more specified target hosts or IP addresses by utilizing foundational network diagnostic tools such as `ping` and either `traceroute` or `mtr` (My Traceroute).
+### 7️⃣ audit\_local\_admin\_members.sh
 
-The process begins with the `ping` command to evaluate basic reachability, latency, and packet loss to the specified target. If additional diagnosis is warranted, the script employs `traceroute` or `mtr` to delineate the network path hop-by-hop from the source machine to the destination. This path analysis is invaluable for identifying the specific locations of network failures or significant latency spikes along the route, thereby assisting administrators in differentiating between issues relating to the local system's network configuration, intermediary network devices, or remote endpoints. Such a thorough approach significantly accelerates the troubleshooting process.
+Privilege sprawl erodes security posture. This script cross checks UID 0 accounts and members of privileged groups (sudo, wheel) against a defined safe list, immediately flagging unauthorised admin access. Run it periodically and ship the diff to your SIEM for an iron clad least privilege audit.
 
-**How it works**
-
-> •	Accepts a list of target hostnames or IP addresses.
-> •	For each target: * Uses ping -c 4 <target> to check basic reachability and average RTT. * If ping fails or for more detail, uses traceroute -n <target> or mtr -n -r -c 1 <target> to show hops.
-> •	Outputs a summary table: Target, Reachable (Yes/No), Avg RTT (ms), Hops (if traceroute run).
+Automation here replaces error prone manual reviews and acts as an early warning system for compromised or leftover accounts following personnel changes.
 
 
-**Usage Example**
+#### How it works
 
-```bash
-Insert example here
-```
+* UID 0 accounts from `/etc/passwd`.
+* Group parsing via `getent group`.
+* Compares against hard‑coded SAFE array (edit to suit).
+* Prints ✅ expected vs ⚠ review.
 
-### Code
+#### Usage Example
 
 ```bash
-Insert code here
+./audit_local_admin_members.sh | grep ⚠
 ```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+SAFE=(root adminuser)
+admins=( $(awk -F: '($3==0){print $1}' /etc/passwd) )
+for g in sudo wheel; do
+  [[ $(getent group $g) ]] && admins+=( $(getent group $g | cut -d: -f4 | tr , ' ') )
+done
+for u in "${admins[@]}"; do
+  if [[ " ${SAFE[*]} " =~ " $u " ]]; then
+    echo "✔ $u (expected)"
+  else
+    echo "⚠ $u (review)"
+  fi
+done | sort -u
+```
+
 ---
 
-## FirewallRules
-### 🔟 Export‑WindowsFirewallRules
+### 8️⃣ run\_antivirus\_scan.sh
 
-The configuration of a firewall is essential for the security of Linux systems, as its rules can change over time due to updates, software installations, or unintentional edits. This script provides a reliable means to export live firewall rules—from iptables, nftables, or other popular Linux firewalls—into a human-readable file. 
+Contrary to myth, Linux malware exists—and unchecked file servers can become propagation hubs. This wrapper triggers a recursive, low noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
 
-This exported file serves several key purposes: it acts as a backup for quick restoration, aids in auditing by offering a clear snapshot of the configuration, and facilitates change tracking by documenting modifications over time. This comprehensive approach enhances security and ensures compliance with organizational policies.
+Use it to vet user uploads, sweep build artefacts before CI promotion, or validate cloud images pre deployment without succumbing to heavier commercial agents.
 
-**How it works**
+> Invoke **ClamAV** (or swap for your engine) on demand, then parse a clean summary.
 
->•	Detects which firewall system is likely in use (iptables or nftables).
-> •	For iptables: Uses iptables-save > outputfile.txt.
-> •	For nftables: Uses nft list ruleset > outputfile.txt. (For JSON: nft list ruleset -j > outputfile.json if supported and desired).
-> •	Saves the output to a specified file.
-> •	Provides a message indicating the export location.
+#### How it works
 
-**Usage Example**
+* Checks for `clamscan` binary.
+* Accepts optional target path; defaults to `/`.
+* Logs to timestamped file.
+* Evaluates infection count and prints verdict.
 
-```bash
-Insert example here
-```
-
-### Code
+#### Usage Example
 
 ```bash
-Insert code here
+sudo ./run_antivirus_scan.sh /var/www
 ```
 
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+TARGET=${1:-/}
+LOG="clamscan_$(date +%Y%m%d_%H%M).log"
+command -v clamscan >/dev/null || { echo "Install ClamAV"; exit 1; }
+clamscan -ri "$TARGET" | tee "$LOG"
+if grep -q "Infected files: 0" "$LOG"; then
+  echo "✔ No threats detected"
+else
+  echo "⚠ Threats found – see $LOG"
+fi
+```
+
+---
+
+### 9️⃣ test\_network\_connectivity.sh
+
+Contrary to myth, Linux malware exists—and unchecked file servers can become propagation hubs. This wrapper triggers a recursive, low noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
+
+Use it to vet user uploads, sweep build artefacts before CI promotion, or validate cloud images pre deployment without succumbing to heavier commercial agents.
+
+> Differentiate local, LAN, or WAN problems using a combo of `ping` and `traceroute`/`mtr`.
+
+#### How it works
+
+* Built‑in TARGETS array (edit) or pass args.
+* Pings with 4 probes + 2‑sec timeout.
+* If unreachable, runs `traceroute -n` up to 20 hops.
+* Prints reachability, RTT, and last hop.
+
+#### Usage Example
+
+```bash
+./test_network_connectivity.sh github.com 8.8.8.8
+```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+TARGETS=("$@")
+[[ ${#TARGETS[@]} -eq 0 ]] && TARGETS=(8.8.8.8 1.1.1.1 github.com)
+for t in "${TARGETS[@]}"; do
+  if ping -c4 -W2 "$t" &>/dev/null; then
+    rtt=$(ping -c4 "$t" | awk -F/ 'END{print $5" ms"}')
+    echo "✔ $t reachable – avg RTT $rtt"
+  else
+    hops=$(traceroute -n -m 20 "$t" | tail -1 | awk '{print $1}')
+    echo "✖ $t unreachable – reached $hops hops"
+  fi
+done
+```
+
+---
+
+### 🔟 export\_firewall\_rules.sh
+
+Firewall rules drift over time through updates, hot fixes, and human edits. This helper snapshots the current iptables or nftables ruleset to a timestamped file for backup, peer review, or compliance archives—ensuring you can always roll back or audit historical changes without combing through shell history.
+Automate it post deployment so every change to infrastructure has an accompanying rule export under version control.
+
+> Track rule drift by exporting iptables/nftables to a file you can restore or audit.
+
+#### How it works
+
+* Checks for `iptables-save`, else `nft`.
+* Emits to `firewall_YYYYMMDD_HHMM.rules`.
+
+#### Usage Example
+
+```bash
+sudo ./export_firewall_rules.sh
+```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+OUT="firewall_$(date +%Y%m%d_%H%M).rules"
+if command -v iptables-save >/dev/null; then
+  sudo iptables-save > "$OUT"
+elif command -v nft >/dev/null; then
+  sudo nft list ruleset > "$OUT"
+else
+  echo "No supported firewall found"; exit 1;
+fi
+echo "✓ Rules saved to $OUT"
+```
+
+---
+
+### 1️⃣1️⃣ schedule\_automated\_system\_updates.sh
+
+Timely patching thwarts the majority of commodity exploits. This script installs a root owned weekly cron job that runs unattended upgrades with full logging, turning patch management from an intermittent task into a set and forget baseline.
+Coupled with log shipping, it yields a verifiable patch compliance trail without the need for heavy management platforms on every host.
+
+> Unpatched boxes invite 0‑days. This helper drops a root‑owned weekly cron that runs unattended updates and logs output.
+
+#### How it works
+
+* Writes `/etc/cron.weekly/auto_update` with distro‑aware commands.
+* Logs to `/var/log/auto_update.log`.
+
+#### Usage Example
+
+```bash
+sudo ./schedule_automated_system_updates.sh
+```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+CRON="/etc/cron.weekly/auto_update"
+cat <<'EOS' | sudo tee "$CRON" >/dev/null
+#!/bin/bash
+exec > /var/log/auto_update.log 2>&1
+if command -v apt >/dev/null; then
+  apt update && apt -y dist-upgrade
+elif command -v dnf >/dev/null; then
+  dnf -y upgrade --refresh
+fi
+EOS
+sudo chmod +x "$CRON"
+echo "✓ Weekly auto-update scheduled ($CRON)"
+```
+
+---
+
+### 1️⃣2️⃣ rotate\_and\_archive\_logs.sh
+Log bloat can crash services faster than almost any other resource issue. This helper scans for files over 50 MB in /var/log, compresses them into an archive directory, and safely truncates the originals—emulating logrotate where the utility is absent or misconfigured.
+Ideal for containers or IoT devices with limited storage, the script keeps critical logs available while ensuring disks stay well below panic thresholds.
+
+> Prevent log partitions from filling by compressing logs > 50 MB and shipping them to an archive folder.
+
+#### How it works
+
+* Default source `/var/log` and dest `/var/log/archive` (edit vars).
+* Finds large files not already `.gz`.
+* `gzip -c` to archive; truncates original with `: > file`.
+
+#### Usage Example
+
+```bash
+sudo ./rotate_and_archive_logs.sh
+```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+SRC=/var/log; DST=/var/log/archive; SZ=50M
+mkdir -p "$DST"
+find "$SRC" -type f -size +$SZ ! -name '*.gz' | while read f; do
+  gzip -c "$f" > "$DST/$(basename "$f").gz" && : > "$f"
+  echo "Rotated $f"
+done
+```
+
+---
 ---
 
 ## Conclusion
