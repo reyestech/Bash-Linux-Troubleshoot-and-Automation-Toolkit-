@@ -1,6 +1,6 @@
 
 
-![image](https://github.com/user-attachments/assets/d3ddf94c-e630-4c1c-bab6-4cdf16f72470)
+![image](https://github.com/user-attachments/assets/5bbc84f5-5fed-47de-a08c-9f5ac7db3164)
 
 # Bash-Linux-Troubleshoot-and-Automation-Toolkit
 
