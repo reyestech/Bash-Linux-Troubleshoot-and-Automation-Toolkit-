@@ -57,6 +57,10 @@ To get started with the toolkit, simply clone the repository to your local machi
 
 These scripts are designed to be portable and require no external libraries, making them ideal for environments with limited internet access or tight security controls. They are suitable for laptops, servers, and virtual machines. Most scripts include comments and examples to help new users understand their purpose and structure.
 
+<details>
+   <summary><strong> 📋Click to View Script </strong></summary>
+   
+
 ```bash
 # 1. Clone the repo
  git clone https://github.com/<your‑org>/bash-linux-troubleshoot-toolkit.git
@@ -68,6 +72,8 @@ These scripts are designed to be portable and require no external libraries, mak
 # 3. Run any helper – e.g. grab the last 12 h of syslog + auth
  ./Scripts/collect_system_logs.sh --hours 12 --logs syslog,auth --output /tmp/IR
 ```
+
+</details>
 
 All helpers accept `-h | --help` and print inline docs.
 
@@ -100,7 +106,8 @@ Instead of juggling multiple commands, users can access a structured archive sui
 ```
 
 <details>
-   <summary><strong> 📋Click to View Code </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
+
 
 ```bash
 #!/usr/bin/env bash
@@ -160,7 +167,7 @@ sudo ./check_system_integrity.sh
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -182,17 +189,17 @@ fi
 
 ### 3️⃣ get\_active\_connections.sh
 
-Command and control beacons leave unmistakable footprints as ESTABLISHED sockets. This helper surfaces every outbound TCP session, correlating remote endpoints with the owning process and user account. The result is a sortable list ideal for rapid threat hunt filtering or bandwidth hog investigations.
+Command and control beacons leave unmistakable footprints as ESTABLISHED sockets. This helper surfaces every outbound TCP session, correlating remote endpoints with the owning process and user account. The result is a sortable list ideal for rapid threat-hunt filtering or bandwidth-hog investigations.
 
-For defenders, it spotlights suspicious destinations and uncovers covert data exfiltration. For operators, it quickly reveals runaway services or misconfigured daemons saturating network links without the overhead of full stack profilers.
+For defenders, it spotlights suspicious destinations and uncovers covert data exfiltration. For operators, it quickly reveals runaway services or misconfigured daemons saturating network links without the overhead of full-stack profilers.
 
-> For threat hunts it highlights suspicious destinations; for ops it surfaces rogue processes hogging links.
+For threat hunts, it highlights suspicious destinations; for operations, it surfaces rogue processes hogging resources.
 
 #### How it works
 
 * Wraps `netstat -pant` (fallback: `ss -pant`).
 * Filters on `ESTABLISHED` state.
-* Parses PID/command and maps to username.
+* Parses the PID/command and maps it to the username.
 * Sorts by remote host for coherence.
 
 #### Usage Example
@@ -202,7 +209,7 @@ For defenders, it spotlights suspicious destinations and uncovers covert data ex
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -219,9 +226,9 @@ done | sort -k2
 
 ### 4️⃣ system\_health\_snapshot.sh
 
-Every effective troubleshooting session starts with a baseline. This script captures CPU load averages, memory utilisation, disk capacity, and count of pending updates in one compact report—providing an immediate pulse check on host health. Store successive snapshots to quantify the impact of tuning or to satisfy change approval evidence requirements.
+Every effective troubleshooting session starts with a baseline. This script captures CPU load averages, memory utilisation, disk capacity, and count of pending updates in one compact report, providing an immediate pulse check on host health. Store successive snapshots to quantify the impact of tuning or to satisfy change approval evidence requirements.
 
-Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and package managers), the script executes consistently across distributions and even minimal recovery environments, giving you dependable metrics no matter where you run it.
+Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and package managers), the script executes consistently across distributions and even minimal recovery environments, providing dependable metrics regardless of where you run it.
 
 > Capture CPU load, memory, disk, and pending updates in one shot.
 
@@ -243,7 +250,7 @@ diff -u before_fix.txt after_fix.txt
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -267,9 +274,9 @@ fi
 
 ### 5️⃣ detect\_bruteforce\_logons.sh
 
-SSH brute force attempts flood logs long before a compromise. This analyser parses authentication records for failed passwords, grouping attempts by IP and user, then flags offenders that exceed a configurable threshold. Feed the output directly into fail2ban, firewall blocklists, or SIEM watchlists for real time protection.
+SSH brute force attempts flood logs long before a compromise. This analyzer parses authentication records for failed passwords, grouping attempts by IP and user, then flags offenders that exceed a configurable threshold. Feed the output directly into fail2ban, firewall blocklists, or SIEM watchlists for real-time protection.
 
-Historical reports also reveal attack trends, helping security teams justify MFA roll outs and hardening budgets with concrete data instead of anecdotal evidence.
+Historical reports also reveal attack trends, helping security teams justify MFA rollouts and hardening budgets with concrete data instead of anecdotal evidence.
 
 
 #### How it works
@@ -287,7 +294,7 @@ sudo ./detect_bruteforce_logons.sh --hours 12 --threshold 20
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -314,7 +321,7 @@ awk -v dt="$SINCE" '$0>dt && /Failed password/' "$LOGSRC" | \
 
 ### 6️⃣ get\_listening\_ports.sh
 
-Unintended listening services are low hanging fruit for attackers. This utility enumerates every TCP and UDP socket in a LISTEN state, tagging each with protocol, address, port, PID, and executable name. That clarity allows administrators to spot rogue backdoors or verify that micro services expose only authorised interfaces.
+Unintended listening services are low-hanging fruit for attackers. This utility enumerates every TCP and UDP socket in a LISTEN state, tagging each with protocol, address, port, PID, and executable name. That clarity allows administrators to spot rogue backdoors or verify that microservices expose only authorized interfaces.
 
 Embed it in CI smoke tests or golden image validation to enforce network surface standards automatically—no manual port audits required.
 
@@ -334,7 +341,7 @@ Embed it in CI smoke tests or golden image validation to enforce network surface
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -351,9 +358,9 @@ done | sort -k2
 
 ### 7️⃣ audit\_local\_admin\_members.sh
 
-Privilege sprawl erodes security posture. This script cross checks UID 0 accounts and members of privileged groups (sudo, wheel) against a defined safe list, immediately flagging unauthorised admin access. Run it periodically and ship the diff to your SIEM for an iron clad least privilege audit.
+Privilege sprawl erodes security posture. This script cross-checks UID 0 accounts and members of privileged groups (sudo, wheel) against a defined safe list, immediately flagging unauthorised admin access. Run it periodically and ship the diff to your SIEM for an iron-clad least privilege audit.
 
-Automation here replaces error prone manual reviews and acts as an early warning system for compromised or leftover accounts following personnel changes.
+Automation here replaces error-prone manual reviews and acts as an early warning system for compromised or leftover accounts following personnel changes.
 
 
 #### How it works
@@ -370,7 +377,7 @@ Automation here replaces error prone manual reviews and acts as an early warning
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 
 ```bash
@@ -396,17 +403,17 @@ done | sort -u
 
 ### 8️⃣ run\_antivirus\_scan.sh
 
-Contrary to myth, Linux malware exists—and unchecked file servers can become propagation hubs. This wrapper triggers a recursive, low noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
+Contrary to myth, Linux malware exists, and unchecked file Servers can become propagation hubs. This wrapper triggers a recursive, low-noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
 
-Use it to vet user uploads, sweep build artefacts before CI promotion, or validate cloud images pre deployment without succumbing to heavier commercial agents.
+Use it to vet user uploads, sweep build artifacts before CI promotion, or validate cloud images pre-deployment without relying on heavier commercial agents.
 
-> Invoke **ClamAV** (or swap for your engine) on demand, then parse a clean summary.
+Invoke **ClamAV** (or substitute with your preferred engine) on demand, then parse a clean summary.
 
 #### How it works
 
 * Checks for `clamscan` binary.
 * Accepts optional target path; defaults to `/`.
-* Logs to timestamped file.
+* Logs to a timestamped file.
 * Evaluates infection count and prints verdict.
 
 #### Usage Example
@@ -416,7 +423,7 @@ sudo ./run_antivirus_scan.sh /var/www
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -438,9 +445,9 @@ fi
 
 ### 9️⃣ test\_network\_connectivity.sh
 
-Contrary to myth, Linux malware exists—and unchecked file servers can become propagation hubs. This wrapper triggers a recursive, low noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
+Contrary to myth, Linux malware exists, and unchecked file servers can become propagation hubs. This wrapper triggers a recursive, low-noise ClamAV scan, logs findings, and summarises infections in a single line so health monitors or cron mail can pick them up instantly.
 
-Use it to vet user uploads, sweep build artefacts before CI promotion, or validate cloud images pre deployment without succumbing to heavier commercial agents.
+Use it to vet user uploads, sweep build artifacts before CI promotion, or validate cloud images pre-deployment without relying on heavier commercial agents.
 
 > Differentiate local, LAN, or WAN problems using a combo of `ping` and `traceroute`/`mtr`.
 
@@ -458,7 +465,7 @@ Use it to vet user uploads, sweep build artefacts before CI promotion, or valida
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -482,8 +489,8 @@ done
 
 ### 🔟 export\_firewall\_rules.sh
 
-Firewall rules drift over time through updates, hot fixes, and human edits. This helper snapshots the current iptables or nftables ruleset to a timestamped file for backup, peer review, or compliance archives—ensuring you can always roll back or audit historical changes without combing through shell history.
-Automate it post deployment so every change to infrastructure has an accompanying rule export under version control.
+Firewall rules drift over time through updates, hot fixes, and human edits. This helper snapshots the current iptables or nftables ruleset to a timestamped file for backup, peer review, or compliance archives, ensuring you can always roll back or audit historical changes without having to comb through shell history.
+Automate it post-deployment so every change to the infrastructure has an accompanying rule export under version control.
 
 > Track rule drift by exporting iptables/nftables to a file you can restore or audit.
 
@@ -499,7 +506,7 @@ sudo ./export_firewall_rules.sh
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 
 ```bash
@@ -522,10 +529,10 @@ echo "✓ Rules saved to $OUT"
 
 ### 1️⃣1️⃣ schedule\_automated\_system\_updates.sh
 
-Timely patching thwarts the majority of commodity exploits. This script installs a root owned weekly cron job that runs unattended upgrades with full logging, turning patch management from an intermittent task into a set and forget baseline.
+Timely patching thwarts the majority of commodity exploits. This script installs a root-owned weekly cron job that runs unattended upgrades with full logging, turning patch management from an intermittent task into a set-and-forget baseline.
 Coupled with log shipping, it yields a verifiable patch compliance trail without the need for heavy management platforms on every host.
 
-> Unpatched boxes invite 0‑days. This helper drops a root‑owned weekly cron that runs unattended updates and logs output.
+> Unpatched boxes invite 0‑days. This helper installs a root-owned weekly cron that runs unattended updates and logs the output.
 
 #### How it works
 
@@ -539,8 +546,7 @@ sudo ./schedule_automated_system_updates.sh
 ```
 
 <details>
-   <summary><strong> 📋Click to View Scripts </strong></summary>
-
+   <summary><strong> 📋Click to View Script </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -567,7 +573,7 @@ echo "✓ Weekly auto-update scheduled ($CRON)"
 Log bloat can crash services faster than almost any other resource issue. This helper scans for files larger than 50 MB in /var/log, compresses them into an archive directory, and safely truncates the originals—emulating logrotate when the utility is absent or misconfigured.
 Ideal for containers or IoT devices with limited storage, the script keeps critical logs available while ensuring disk usage stays well below panic thresholds.
 
-> Prevent log partitions from filling by compressing logs > 50 MB and shipping them to an archive folder.
+> Prevent log partitions from filling by compressing logs that are 50 MB or larger and shipping them to an archive folder.
 
 #### How it works
 
