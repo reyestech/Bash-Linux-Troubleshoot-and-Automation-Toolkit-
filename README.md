@@ -502,8 +502,8 @@ echo "✓ Weekly auto-update scheduled ($CRON)"
 ---
 
 ### 1️⃣2️⃣ rotate\_and\_archive\_logs.sh
-Log bloat can crash services faster than almost any other resource issue. This helper scans for files over 50 MB in /var/log, compresses them into an archive directory, and safely truncates the originals—emulating logrotate where the utility is absent or misconfigured.
-Ideal for containers or IoT devices with limited storage, the script keeps critical logs available while ensuring disks stay well below panic thresholds.
+Log bloat can crash services faster than almost any other resource issue. This helper scans for files larger than 50 MB in /var/log, compresses them into an archive directory, and safely truncates the originals—emulating logrotate when the utility is absent or misconfigured.
+Ideal for containers or IoT devices with limited storage, the script keeps critical logs available while ensuring disk usage stays well below panic thresholds.
 
 > Prevent log partitions from filling by compressing logs > 50 MB and shipping them to an archive folder.
 
@@ -537,13 +537,11 @@ done
 
 Conclusion
 
-The Bash-Linux-Troubleshoot Toolkit represents a practical and purpose-driven resource for professionals and learners who prioritize speed, precision, and simplicity in Linux administration. Each script is meticulously designed to aid users in understanding and promptly addressing underlying issues using reliable tools available on most Linux systems. This toolkit benefits a range of users, from junior engineers managing their inaugural server to security analysts addressing threats and IT managers seeking to empower their teams while streamlining the troubleshooting workflow.
+The Bash-Linux-Troubleshoot Toolkit is a practical resource for professionals and learners focused on quick, precise, and simple Linux administration. Each script is designed to help users identify and resolve issues using reliable tools on most Linux systems. This toolkit is beneficial for a variety of users, from junior engineers managing their first server to security analysts tackling threats and IT managers empowering their teams.
 
-Beyond its functional merits, this compilation is an educational tool and a subject for discussion. Recruiters can assess real-world scripting skills, mentors can leverage the scripts to elucidate best practices, and contributors can evolve the toolkit to adapt to changing infrastructural needs. The toolkit remains versatile and extensible by maintaining a focus on clear, concise, and actionable scripting.
+In addition to its practical applications, it serves as an educational tool for recruiters, mentors, and contributors to adapt to changing infrastructure needs. The toolkit is versatile and extensible, emphasizing clear and actionable scripting. We hope it becomes an essential part of your operational playbook and inspires the development of automation solutions. Your feedback and collaboration are incredibly  welcome to enhance this resource for the open-source and IT communities.
 
-Thank you for your engagement with the Bash-Linux-Troubleshoot Toolkit. We aspire that it becomes an essential component of your operational playbook and an inspiration for developing automation-first solutions. We welcome your feedback and collaboration to enhance this resource for the broader open-source and IT community.
-
-⭐ The future repository if you find this concept useful! As scripts are developed, issues with bugs or new features are raised. Happy scripting — and automate all the things! 
+⭐ The future repository if you find this concept helpful! As scripts are developed, issues with bugs or new features are raised. Happy scripting — and automate all the things! 
 
 
 🔍 — Happy hunting and automate *all* the things! 
