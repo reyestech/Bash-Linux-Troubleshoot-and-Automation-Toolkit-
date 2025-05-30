@@ -90,12 +90,15 @@ Instead of juggling multiple commands, users can access a structured archive sui
 #### Usage Example
 
 ```bash
-# Last 24 h of syslog + auth
+# Last 24 h of syslog + auth
 ./collect_system_logs.sh --hours 24 --logs syslog,auth --output /var/tmp/incident_logs
 
-# Everything SSHD wrote in the past 2 days
+# Everything SSHD wrote in the past 2 days
 ./collect_system_logs.sh --journal_unit sshd --since "2 days ago" --output /var/tmp/ssh_logs
 ```
+
+<details>
+   <summary><strong> 📋Click to View Code </strong></summary>
 
 ```bash
 #!/usr/bin/env bash
@@ -127,13 +130,17 @@ else
 fi
 ```
 
+</details>
+
+
+
 ---
 
 ### 2️⃣ check\_system\_integrity.sh
 
-Package or file integrity drift often precedes outages and breaches. This script unifies rpm -Va and debsums checks, drops results into a timestamped report, and highlights unexpected hashes or permissions so you can intervene before minor deviations become service stopping incidents.
+Package or file integrity drift often precedes outages and breaches. This script unifies rpm -Va and debsums checks, drops results into a timestamped report, and highlights unexpected hashes or permissions so you can intervene before minor deviations become service-stopping incidents.
 
-Beyond vendor packages, the tool can be extended to snapshot hashes of bespoke configuration files such as /etc/ssh/sshd_config, providing an extra guardrail against silent backdoors or well intentioned but undocumented changes. Pair it with a nightly cron to create a tamper evident audit trail.
+Beyond vendor packages, the tool can be extended to snapshot hashes of bespoke configuration files such as /etc/ssh/sshd_config, providing an extra guardrail against silent backdoors or well-intentioned but undocumented changes. Pair it with a nightly cron to create a tamper-evident audit trail.
 
 
 #### How it works
@@ -150,6 +157,9 @@ Beyond vendor packages, the tool can be extended to snapshot hashes of bespoke c
 sudo ./check_system_integrity.sh
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -163,6 +173,8 @@ else
 fi
 [[ -s $LOG ]] && echo "⚠️ Issues found – see $LOG" || echo "✔ Integrity OK"
 ```
+
+</details>
 
 ---
 
@@ -187,6 +199,9 @@ For defenders, it spotlights suspicious destinations and uncovers covert data ex
 ./get_active_connections.sh | grep -E "\b443\b"
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -195,6 +210,8 @@ sudo netstat -pant 2>/dev/null | awk '$6=="ESTABLISHED" {print $4,$5,$7}' | whil
   printf "%s -> %-22s %-8s %s\n" "$l" "$r" "$user" "$proc"
 done | sort -k2
 ```
+
+</details>
 
 ---
 
@@ -223,6 +240,9 @@ Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and pack
 diff -u before_fix.txt after_fix.txt
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -238,6 +258,8 @@ elif command -v dnf >/dev/null; then
   echo "\n== PENDING DNF UPDATES =="; sudo dnf check-update -q | grep -c '^'
 fi
 ```
+
+</details>
 
 ---
 
@@ -262,6 +284,9 @@ Historical reports also reveal attack trends, helping security teams justify MFA
 sudo ./detect_bruteforce_logons.sh --hours 12 --threshold 20
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -280,6 +305,8 @@ awk -v dt="$SINCE" '$0>dt && /Failed password/' "$LOGSRC" | \
   awk '{ip=$NF; user=$(NF-5); print ip","user}' | sort | uniq -c | sort -nr | \
   awk -v t=$THRESH '$1>=t {printf "%s attempts\tIP:%s\tUser:%s\n",$1,substr($2,1,index($2,",")-1),substr($2,index($2,",")+1)}'
 ```
+
+</details>
 
 ---
 
@@ -304,6 +331,9 @@ Embed it in CI smoke tests or golden image validation to enforce network surface
 ./get_listening_ports.sh | grep 8080
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -312,6 +342,8 @@ sudo ss -tulnp | awk 'NR>1 {print $1,$5,$7}' | while read proto addr proc; do
   printf "%-4s %-25s %-6s\n" "$proto" "$addr" "$cmd"
 done | sort -k2
 ```
+
+</details>
 
 ---
 
@@ -335,6 +367,10 @@ Automation here replaces error prone manual reviews and acts as an early warning
 ./audit_local_admin_members.sh | grep ⚠
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -351,6 +387,8 @@ for u in "${admins[@]}"; do
   fi
 done | sort -u
 ```
+
+</details>
 
 ---
 
@@ -375,6 +413,9 @@ Use it to vet user uploads, sweep build artefacts before CI promotion, or valida
 sudo ./run_antivirus_scan.sh /var/www
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -388,6 +429,8 @@ else
   echo "⚠ Threats found – see $LOG"
 fi
 ```
+
+</details>
 
 ---
 
@@ -412,6 +455,9 @@ Use it to vet user uploads, sweep build artefacts before CI promotion, or valida
 ./test_network_connectivity.sh github.com 8.8.8.8
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -427,6 +473,8 @@ for t in "${TARGETS[@]}"; do
   fi
 done
 ```
+
+</details>
 
 ---
 
@@ -448,6 +496,10 @@ Automate it post deployment so every change to infrastructure has an accompanyin
 sudo ./export_firewall_rules.sh
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -461,6 +513,8 @@ else
 fi
 echo "✓ Rules saved to $OUT"
 ```
+
+</details>
 
 ---
 
@@ -482,6 +536,10 @@ Coupled with log shipping, it yields a verifiable patch compliance trail without
 sudo ./schedule_automated_system_updates.sh
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -498,6 +556,8 @@ EOS
 sudo chmod +x "$CRON"
 echo "✓ Weekly auto-update scheduled ($CRON)"
 ```
+
+</details>
 
 ---
 
@@ -519,6 +579,9 @@ Ideal for containers or IoT devices with limited storage, the script keeps criti
 sudo ./rotate_and_archive_logs.sh
 ```
 
+<details>
+   <summary><strong> 📋Click to View Scripts </strong></summary>
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -529,6 +592,8 @@ find "$SRC" -type f -size +$SZ ! -name '*.gz' | while read f; do
   echo "Rotated $f"
 done
 ```
+
+</details>
 
 ---
 ---
