@@ -6,8 +6,8 @@
 
 # Bash-Linux-Troubleshoot-and-Automation-Toolkit
 
-## Overview
-
+## **Intro**
+**Overview**
 Effective Linux system administration and cybersecurity require prompt diagnostics, comprehensive visibility, and intelligent automation. This repository comprises a collection of Bash scripts designed to empower Linux administrators, DevOps engineers, and security teams with immediate troubleshooting capabilities. These scripts are designed to capture system metrics, diagnose issues, automate health checks, and enhance operational awareness, all while utilizing standard Linux utilities without requiring external dependencies.
 
 This toolkit is particularly suitable for system administrators managing Linux servers, professionals learning Linux system administration, and experienced IT professionals seeking lightweight and reliable utilities for live incident response or root cause analysis. Each script is modular, well-documented, parameterizable, and safe for use across various Linux distributions on servers, workstations, or virtual machines.
@@ -51,6 +51,7 @@ Whether you are a junior engineer looking to access all the included scripts imm
 ---
 
 ## Guide
+
 ### 📚 Quick‑Start-Guide
 
 To get started with the toolkit, clone the repository to your local machine using git. This toolkit allows you to access all of the included scripts immediately. Once downloaded, navigate into the directory and make the scripts executable using chmod. You can then run any script directly from your terminal by calling its filename with a period (.) at the beginning. 
@@ -108,7 +109,6 @@ Instead of juggling multiple commands, users can access a structured archive sui
 <details>
    <summary><strong> 📋Click to View Script </strong></summary>
 
-
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -142,12 +142,11 @@ fi
 </details>
 
 
-
 ---
 
 ### 2️⃣ check\_system\_integrity.sh
 
-Package or file integrity drift often precedes outages and breaches. This script unifies rpm -Va and debsums checks, drops results into a timestamped report, and highlights unexpected hashes or permissions so you can intervene before minor deviations become service-stopping incidents.
+Package or file integrity drift often precedes outages and breaches. This script combines RPM -Va and DEBsums checks, consolidates the results into a timestamped report, and highlights unexpected hashes or permissions, allowing you to intervene before minor deviations escalate into service-stopping incidents.
 
 Beyond vendor packages, the tool can be extended to snapshot hashes of bespoke configuration files such as /etc/ssh/sshd_config, providing an extra guardrail against silent backdoors or well-intentioned but undocumented changes. Pair it with a nightly cron to create a tamper-evident audit trail.
 
@@ -191,7 +190,7 @@ fi
 
 Command and control beacons leave unmistakable footprints as ESTABLISHED sockets. This helper surfaces every outbound TCP session, correlating remote endpoints with the owning process and user account. The result is a sortable list ideal for rapid threat-hunt filtering or bandwidth-hog investigations.
 
-For defenders, it spotlights suspicious destinations and uncovers covert data exfiltration. For operators, it quickly reveals runaway services or misconfigured daemons saturating network links without the overhead of full-stack profilers.
+For defenders, it highlights suspicious destinations and exposes covert data exfiltration. For operators, it quickly identifies runaway services or misconfigured daemons saturating network links, without the overhead of full-stack profilers.
 
 For threat hunts, it highlights suspicious destinations; for operations, it surfaces rogue processes hogging resources.
 
@@ -228,7 +227,7 @@ done | sort -k2
 
 Every effective troubleshooting session starts with a baseline. This script captures CPU load averages, memory utilisation, disk capacity, and count of pending updates in one compact report, providing an immediate pulse check on host health. Store successive snapshots to quantify the impact of tuning or to satisfy change approval evidence requirements.
 
-Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and package managers), the script executes consistently across distributions and even minimal recovery environments, providing dependable metrics regardless of where you run it.
+Because it relies solely on ubiquitous GNU utilities (uptime, free, df, and package managers), the script executes consistently across distributions and even minimal recovery environments, providing dependable metrics regardless of where it is run.
 
 > Capture CPU load, memory, disk, and pending updates in one shot.
 
@@ -274,10 +273,9 @@ fi
 
 ### 5️⃣ detect\_bruteforce\_logons.sh
 
-SSH brute force attempts flood logs long before a compromise. This analyzer parses authentication records for failed passwords, grouping attempts by IP and user, then flags offenders that exceed a configurable threshold. Feed the output directly into fail2ban, firewall blocklists, or SIEM watchlists for real-time protection.
+SSH brute force attempts flood logs long before a compromise. This analyzer parses authentication records for failed passwords, grouping attempts by IP address and user, and then flags offenders who exceed a configurable threshold. Feed the output directly into fail2ban, firewall blocklists, or SIEM watchlists for real-time protection.
 
 Historical reports also reveal attack trends, helping security teams justify MFA rollouts and hardening budgets with concrete data instead of anecdotal evidence.
-
 
 #### How it works
 
@@ -490,7 +488,7 @@ done
 ### 🔟 export\_firewall\_rules.sh
 
 Firewall rules drift over time through updates, hot fixes, and human edits. This helper snapshots the current iptables or nftables ruleset to a timestamped file for backup, peer review, or compliance archives, ensuring you can always roll back or audit historical changes without having to comb through shell history.
-Automate it post-deployment so every change to the infrastructure has an accompanying rule export under version control.
+Please make sure to automate it post-deployment so every change to the infrastructure has an accompanying rule export under version control.
 
 > Track rule drift by exporting iptables/nftables to a file you can restore or audit.
 
@@ -558,7 +556,7 @@ exec > /var/log/auto_update.log 2>&1
 if command -v apt >/dev/null; then
   apt update && apt -y dist-upgrade
 elif command -v dnf >/dev/null; then
-  dnf -y upgrade --refresh
+  dnf -y upgrade-- refresh
 fi
 EOS
 sudo chmod +x "$CRON"
@@ -570,6 +568,7 @@ echo "✓ Weekly auto-update scheduled ($CRON)"
 ---
 
 ### 1️⃣2️⃣ rotate\_and\_archive\_logs.sh
+
 Log bloat can crash services faster than almost any other resource issue. This helper scans for files larger than 50 MB in /var/log, compresses them into an archive directory, and safely truncates the originals—emulating logrotate when the utility is absent or misconfigured.
 Ideal for containers or IoT devices with limited storage, the script keeps critical logs available while ensuring disk usage stays well below panic thresholds.
 
@@ -605,7 +604,7 @@ done
 ---
 ---
 
-## Conclusion
+## **Conclusion**
 
 Conclusion
 
