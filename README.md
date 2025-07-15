@@ -8,9 +8,9 @@
 
 ## Overview
 
-Effective Linux system administration and cybersecurity necessitate prompt diagnostics, comprehensive visibility, and intelligent automation. This repository consists of a collection of Bash scripts designed to empower Linux administrators, DevOps engineers, and security teams with immediate troubleshooting capabilities. These scripts are intended to capture system metrics, diagnose issues, automate health checks, and enhance operational awareness, all while employing standard Linux utilities without the need for external dependencies.
+Effective Linux system administration and cybersecurity require prompt diagnostics, comprehensive visibility, and intelligent automation. This repository comprises a collection of Bash scripts designed to empower Linux administrators, DevOps engineers, and security teams with immediate troubleshooting capabilities. These scripts are designed to capture system metrics, diagnose issues, automate health checks, and enhance operational awareness, all while utilizing standard Linux utilities without requiring external dependencies.
 
-This toolkit is particularly suitable for system administrators managing Linux servers, professionals engaged in learning Linux system administration, and experienced IT professionals seeking lightweight and reliable utilities for live incident response or root cause analysis. Each script is modular, well-documented, parameterizable, and is safe for utilization across various Linux distributions on servers, workstations, or virtual machines.
+This toolkit is particularly suitable for system administrators managing Linux servers, professionals learning Linux system administration, and experienced IT professionals seeking lightweight and reliable utilities for live incident response or root cause analysis. Each script is modular, well-documented, parameterizable, and safe for use across various Linux distributions on servers, workstations, or virtual machines.
 
 This repository delivers a curated **suite of 12 Bash scripts** that empower system administrators, DevOps engineers, and security responders to:
 
@@ -24,7 +24,7 @@ Each script is:
 * **Parameter‑driven** – easily tailored to your environment.
 * **Comment‑rich** – ready for learning, audits, and pull‑requests.
 
-Whether you are a junior engineer maintaining your first VPS, a blue‑team analyst on an IR bridge call, or a hiring manager skimming for actionable skills, this toolkit showcases **production‑safe Bash craftsmanship**.
+Whether you are a junior engineer looking to access all the included scripts immediately or a hiring manager scanning for actionable skills, this toolkit showcases **production-safe Bash craftsmanship**.
 
 <details>
 <summary><strong>📚 Table of Contents — click to expand</strong></summary>
@@ -53,9 +53,9 @@ Whether you are a junior engineer maintaining your first VPS, a blue‑team anal
 ## Guide
 ### 📚 Quick‑Start-Guide
 
-To get started with the toolkit, simply clone the repository to your local machine using git. This allows you to immediately access all of the included scripts. Once downloaded, navigate into the directory and make the scripts executable using chmod. You can then run any script directly from your terminal by calling its filename with ./. 
+To get started with the toolkit, clone the repository to your local machine using git. This toolkit allows you to access all of the included scripts immediately. Once downloaded, navigate into the directory and make the scripts executable using chmod. You can then run any script directly from your terminal by calling its filename with a period (.) at the beginning. 
 
-These scripts are designed to be portable and require no external libraries, making them ideal for environments with limited internet access or tight security controls. They are suitable for laptops, servers, and virtual machines. Most scripts include comments and examples to help new users understand their purpose and structure.
+These scripts are designed to be portable and require no external libraries, making them ideal for environments with limited internet access or strict security controls. They are suitable for use on laptops, servers, and virtual machines. Most scripts include comments and examples to help new users understand their purpose and structure.
 
 <details>
    <summary><strong> 📋Click to View Script </strong></summary>
@@ -69,7 +69,7 @@ These scripts are designed to be portable and require no external libraries, mak
 # 2. Make everything executable
  chmod +x Scripts/*.sh
 
-# 3. Run any helper – e.g. grab the last 12 h of syslog + auth
+# 3. Run any helper – e.g., grab the last 12 h of syslog + auth
  ./Scripts/collect_system_logs.sh --hours 12 --logs syslog,auth --output /tmp/IR
 ```
 
@@ -91,9 +91,9 @@ Instead of juggling multiple commands, users can access a structured archive sui
 
 * Accepts `--hours`, `--logs` (comma‑separated), `--journal_unit`, and `--output`.
 * Auto‑creates the destination folder.
-* For classic files it uses an **awk date filter** (no brittle `sed` hacks).
+* For classic files, it uses an **awk date filter** (no brittle `sed` hacks).
 * For systemd hosts it calls `journalctl --since` with `--output export`.
-* Compresses each log with `gzip ‑9` to save bandwidth when copying.
+* Compresses each log with `gzip -9` to save bandwidth when copying.
 
 #### Usage Example
 
@@ -594,8 +594,7 @@ sudo ./rotate_and_archive_logs.sh
 #!/usr/bin/env bash
 set -euo pipefail
 SRC=/var/log; DST=/var/log/archive; SZ=50M
-mkdir -p "$DST"
-find "$SRC" -type f -size +$SZ ! -name '*.gz' | while read f; do
+mkdir -p "$DST-- ind "$SRC" -type f -size +$SZ ! -name '*.gz' | while read f; do
   gzip -c "$f" > "$DST/$(basename "$f").gz" && : > "$f"
   echo "Rotated $f"
 done
