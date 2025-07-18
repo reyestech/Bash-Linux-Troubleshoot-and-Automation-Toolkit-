@@ -3,6 +3,7 @@
   <img src="https://github.com/user-attachments/assets/5bbc84f5-5fed-47de-a08c-9f5ac7db3164" width="70%" alt="image">
 </p>
 
+---
 
 # Bash-Linux-Troubleshoot-and-Automation-Toolkit
 
